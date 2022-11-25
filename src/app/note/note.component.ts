@@ -15,14 +15,14 @@ export class NoteComponent implements OnInit {
   noteForm!: FormGroup;
   editForm!: FormGroup;
   noteDetails: any;
-  notesData: any = []
-
+  notesData: any;
+  tempNote:any;
   noteObj: Note ={
     id: '',
     note_title: '',
     note_dec: ''
   }
-  constructor(private fb: FormBuilder, private noteService:NoteService, private spinner: NgxSpinnerService) { 
+  constructor(private fb: FormBuilder, private noteService:NoteService, private spinner: NgxSpinnerService) {
     this.noteForm = this.fb.group({
       title:['', Validators.required],
       description:['', Validators.required]
@@ -54,7 +54,6 @@ export class NoteComponent implements OnInit {
   getAllNotes(){
     this.spinner.show();
     this.noteService.getNotes().subscribe((res:Note[])=>{
-      console.log(res)
       this.notesData = res;
       this.spinner.hide();
     })
@@ -67,20 +66,32 @@ export class NoteComponent implements OnInit {
     }
   }
   getAllDetails(note:Note){
-    this.noteDetails = note
-    console.log(this.noteDetails)
+    this.noteDetails = note;
+  }
+  reset(note:Note){
+    this.noteDetails=this.tempNote;
+    this.editForm.reset();
   }
   //update notes
   updateNote(note: Note) {
     const { value } = this.editForm;
-
-    this.noteObj.id = note.id;
-    this.noteObj.note_title = value.edit_title;
-    this.noteObj.note_dec = value.edit_description;
-
-    this.noteService.updateNote(note, this.noteObj).then(() => {
+    this.noteObj.id = this.noteDetails.id;
+    if(value.edit_title=='' || value.edit_title==null){
+      this.noteObj.note_title = this.noteDetails.note_title;
+      value.edit_title=this.noteDetails.note_title;
+    }else{
+      this.noteObj.note_title = value.edit_title;
+    }
+    if(value.edit_description=='' || value.edit_description==null){
+      this.noteObj.note_dec = this.noteDetails.note_dec;
+      value.edit_description=this.noteDetails.note_dec;
+    }else{
+      this.noteObj.note_dec = value.edit_description;
+    }
+    //this.noteDetails= this.noteObj;
+    this.noteService.updateNote(this.noteDetails, this.noteObj).then(() => {
       alert("Note Update Successfully")
     });
-    this.editForm.reset();
+
   }
 }

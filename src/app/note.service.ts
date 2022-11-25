@@ -12,7 +12,7 @@ export class NoteService {
 
     //Add new Note code here
     addNote(note:Note){
-        note.id=doc(collection(this.fs, 'id')).id
+        //note.id=doc(collection(this.fs, 'id')).id
         return addDoc(collection(this.fs, 'Notes'),note)
     }
 
@@ -24,13 +24,16 @@ export class NoteService {
   //Delete notes from database
   deleteNote(note: Note){
     let docRef = doc(this.fs, `Notes/${note.id}`);
-
     return deleteDoc(docRef)
   }
 
   //Update Notes from database
   updateNote(note: Note, notes:any){
     let docRef = doc(this.fs, `Notes/${note.id}`);
+
+    // const data ={
+    //     note
+    // }
     return updateDoc(docRef, notes)
   }
 }
